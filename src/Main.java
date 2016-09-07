@@ -5,12 +5,14 @@ public class Main {
     public static void main(String[] args) {
         MessData[] messData=new MessData[]{
                 new Behavior("_behavior"),
-                new OverView("_OverView"),
+                new OverView("_overview"),
         };
-        for(MessData md:messData){
-            md.deal();
-        }
-//        messData[0].dealDebug();
+//        for(MessData md:messData){
+//            md.deal();
+//        }
+//        messData[1].dealDebug();
+        messData[0].deal();
+
     }
 
 }

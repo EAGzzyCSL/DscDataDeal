@@ -45,6 +45,7 @@ abstract class MessData {
             }
             return deal(blocks);
         } catch (Exception e) {
+            System.out.println("处理：‘" + file.getName() + "’失败");
             e.printStackTrace();
         }
         return null;
@@ -71,39 +72,47 @@ abstract class MessData {
         }
     }
 
-    // 参数为字符串的对象或者数组
-    final String createJsonObject(String key, String value) {
+    final String createJsonObjectFromObject(String key, String object) {
         StringJoiner joiner = new StringJoiner(":", "{", "}");
         joiner.add(
                 createJsonString(key)
         ).add(
-                value
+                object
         );
         return joiner.toString();
     }
 
-    /**
-     * 对于原来一行被逗号分割的多个数据转化为json对象
-     *
-     * @param arr  split后的数组
-     * @param name 对象中各个属性的名字
-     * @return “{}”的字符串json对象
-     */
-    final String createJsonObject(String[] arr, String[] name) {
+    final String createJsonObjectFromObject(String[] arr) {
         StringJoiner joiner = new StringJoiner(",", "{", "}");
-        for (int i = 0; i < arr.length; i++) {
-            joiner.add(createJsonKeyValue(name[i], arr[i]));
+        for (String s : arr) {
+            joiner.add(s);
         }
         return joiner.toString();
     }
 
-    /**
-     * 将数组里面存放的json化的字符串组合为json数组
-     *
-     * @param arr json化的字符串
-     * @return “[{},{}]”的json数组
-     */
-    String createJsonArray(ArrayList<String> arr) {
+    final String createJsonObjectFromValue(String[] arr, String[] name) {
+        StringJoiner joiner = new StringJoiner(",", "{", "}");
+        if (name.length == arr.length) {
+            for (int i = 0; i < arr.length; i++) {
+                joiner.add(createJsonKeyValue(name[i], arr[i]));
+            }
+        } else {
+            //专门针对overview里面filedetail的那个13的
+            int i = 0;
+            for (; i < 2; i++) {
+                joiner.add(createJsonKeyValue(name[i], arr[i]));
+            }
+            joiner.add(createJsonKeyValue(name[i], arr[i] + arr[i + 1]));
+            i++;
+            for (; i < name.length; i++) {
+                joiner.add(createJsonKeyValue(name[i], arr[i + 1]));
+            }
+        }
+
+        return joiner.toString();
+    }
+
+    final String createJsonArrayFromObject(ArrayList<String> arr) {
         StringJoiner joiner = new StringJoiner(",", "[", "]");
         for (String s : arr) {
             joiner.add(s);
@@ -112,18 +121,40 @@ abstract class MessData {
 
     }
 
+    final String createJsonArrayFromObject(String[] arr) {
+        StringJoiner joiner = new StringJoiner(",", "[", "]");
+        for (String s : arr) {
+            joiner.add(s);
+        }
+        return joiner.toString();
 
-    /**
-     * 将名称和值json化为一个json键值对，但不加大括号，作为json对象的一个键值对
-     *
-     * @param key   键名
-     * @param value 键值
-     * @return “"key":"value"”
-     */
-    private String createJsonKeyValue(String key, String value) {
+    }
+
+    final String createJsonArrayFromValue(String[] arr) {
+        StringJoiner joiner = new StringJoiner(",", "[", "]");
+        for (String s : arr) {
+            String tmp = createJsonString(s);
+            if (!tmp.equals("\"\"")) {
+                joiner.add(
+                        tmp
+                );
+            }
+
+        }
+        return joiner.toString();
+    }
+
+    final String createJsonKeyValue(String key, String value) {
         return String.join(":",
                 createJsonString(key),
                 createJsonString(value)
+        );
+    }
+
+    final String createJsonKeyObject(String key, String object) {
+        return String.join(":",
+                createJsonString(key),
+                object
         );
     }
 
@@ -134,6 +165,33 @@ abstract class MessData {
      * @return 加了引号后的字符串
      */
     private String createJsonString(String s) {
-        return String.join(s, "\"", "\"");
+        return String.join(s.replace("|", ""), "\"", "\"");
+    }
+
+    String joinMuLine(int start, ArrayList<String> muLine) {
+        StringJoiner joiner = new StringJoiner("");
+        for (int i = start; i < muLine.size(); i++) {
+            joiner.add(muLine.get(i).trim());
+        }
+        return joiner.toString();
+
+    }
+
+    String joinMuLine(int start, ArrayList<String> muLine, String split) {
+        StringJoiner joiner = new StringJoiner(split);
+        for (int i = start; i < muLine.size(); i++) {
+            String s = muLine.get(i).trim();
+            if (!s.equals("")) {
+                joiner.add(s);
+            }
+        }
+        return joiner.toString();
+
+    }
+
+    void replaceEscape(ArrayList<String> muLine) {
+        for (int i = 0; i < muLine.size(); i++) {
+            muLine.set(i, muLine.get(i).replace("\\", "/"));
+        }
     }
 }

@@ -17,10 +17,14 @@ class Behavior extends MessData {
         };
         for (int i = 1; i < muLine.size(); i++) {
             String[] kv = muLine.get(i).split(",");
-            jsonArray.add(createJsonObject(kv, keys));
+            jsonArray.add(createJsonObjectFromValue(kv, keys));
         }
-        return createJsonObject(hash,
-                createJsonArray(jsonArray));
+        return createJsonObjectFromObject(new String[]{
+                createJsonKeyValue("hash", hash),
+                createJsonKeyObject("behavior",
+                        createJsonArrayFromObject(jsonArray)
+                )
+        });
     }
 
 }

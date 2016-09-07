@@ -90,6 +90,14 @@ abstract class MessData {
         return joiner.toString();
     }
 
+    final String createJsonObjectFromObject(ArrayList<String> arr) {
+        StringJoiner joiner = new StringJoiner(",", "{", "}");
+        for (String s : arr) {
+            joiner.add(s);
+        }
+        return joiner.toString();
+    }
+
     final String createJsonObjectFromValue(String[] arr, String[] name) {
         StringJoiner joiner = new StringJoiner(",", "{", "}");
         if (name.length == arr.length) {
@@ -155,6 +163,20 @@ abstract class MessData {
         return joiner.toString();
     }
 
+    final String createJsonArrayFromValue(ArrayList<String> arr) {
+        StringJoiner joiner = new StringJoiner(",", "[", "]");
+        for (String s : arr) {
+            String tmp = createJsonString(s);
+            if (!tmp.equals("\"\"")) {
+                joiner.add(
+                        tmp
+                );
+            }
+
+        }
+        return joiner.toString();
+    }
+
     final String createJsonKeyValue(String key, String value) {
         return String.join(":",
                 createJsonString(key),
@@ -176,7 +198,7 @@ abstract class MessData {
      * @return 加了引号后的字符串
      */
     private String createJsonString(String s) {
-        return String.join(s.replace("|", ""), "\"", "\"");
+        return String.join(s.replace("|", "").replace('"', '\''), "\"", "\"");
     }
 
     String joinMuLine(int start, ArrayList<String> muLine) {

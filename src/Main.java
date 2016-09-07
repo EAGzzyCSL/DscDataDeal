@@ -6,12 +6,12 @@ public class Main {
         MessData[] messData=new MessData[]{
                 new Behavior("_behavior"),
                 new OverView("_overview"),
+                new NetWork("_network"),
         };
 //        for(MessData md:messData){
 //            md.deal();
 //        }
-//        messData[1].dealDebug();
-        messData[0].deal();
+        messData[2].deal();
 
     }
 

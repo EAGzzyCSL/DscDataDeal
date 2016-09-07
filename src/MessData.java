@@ -97,16 +97,27 @@ abstract class MessData {
                 joiner.add(createJsonKeyValue(name[i], arr[i]));
             }
         } else {
-            //专门针对overview里面filedetail的那个13的
-            int i = 0;
-            for (; i < 2; i++) {
-                joiner.add(createJsonKeyValue(name[i], arr[i]));
+            if (this instanceof OverView) {
+                //专门针对overview里面filedetail的那个13的
+                int i = 0;
+                for (; i < 2; i++) {
+                    joiner.add(createJsonKeyValue(name[i], arr[i]));
+                }
+                joiner.add(createJsonKeyValue(name[i], arr[i] + arr[i + 1]));
+                i++;
+                for (; i < name.length; i++) {
+                    joiner.add(createJsonKeyValue(name[i], arr[i + 1]));
+                }
+            } else if (this instanceof NetWork) {
+                int i = 0;
+                for (; i < arr.length; i++) {
+                    joiner.add(createJsonKeyValue(name[i], arr[i]));
+                }
+                for (; i < name.length; i++) {
+                    joiner.add(createJsonKeyValue(name[i], ""));
+                }
             }
-            joiner.add(createJsonKeyValue(name[i], arr[i] + arr[i + 1]));
-            i++;
-            for (; i < name.length; i++) {
-                joiner.add(createJsonKeyValue(name[i], arr[i + 1]));
-            }
+
         }
 
         return joiner.toString();
